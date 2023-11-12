@@ -156,67 +156,65 @@ export class RFYAccessory {
     this.platform.log.debug('Triggered SET TargetPosition: ' + value);
     this.context.targetPosition = +value;
 
-    if (this.context.currentPosition === this.context.targetPosition) {
-      this.setPositionState(this.platform.Characteristic.PositionState.STOPPED);
-      this.platform.log.debug(
-        'Already in this position, no change to perform!',
-      );
-      return callback();
-    }
-
     this.syncContext();
     const device = this.accessory.context.device;
     const positionState = this.platform.Characteristic.PositionState;
 
     // Action to perform
     let action = '';
-    let fullActionDurationSeconds = 0;
+    let newPositionValue = 0;
 
-    let pos1 = this.context.currentPosition;
-    let pos2 = this.context.targetPosition;
-    if (device.reversed) {
-      const tmp = pos1;
-      pos1 = pos2;
-      pos2 = tmp;
+    // I set this range to replicate the Somfy remote contorl. A press on the up button will send a up command.
+    // To stop this command you can press the "my" button to stop at a desired highted of the shutter. For this I 
+    // created a zone from 40 to 60 so we could press this "button". If it would be only 50 then after I stoped the 
+    // shutter it won't send the command again. This way we could press any number in the range of 40-60 and it will
+    // act as another press on the "my" button.
+
+    // between 40 to 60 we will handle this as the "my" button at Somfy's remote
+    if (this.context.targetPosition >= 40 && this.context.targetPosition <= 60) {
+      this.setPositionState(positionState.DECREASING);
+      action = 'program';
+      newPositionValue = 50;
     }
-
-    if (pos1 > pos2) {
+    // under 40 will mean we want to close the shutter.
+    else if (this.context.targetPosition < 40) {
       this.setPositionState(positionState.DECREASING);
       action = 'down';
-      fullActionDurationSeconds = device.openDurationSeconds;
-    } else {
+      newPositionValue = 0;
+    }
+    // above 60 mean we want to open the shutter.
+    else {
       this.setPositionState(positionState.INCREASING);
       action = 'up';
-      fullActionDurationSeconds = device.closeDurationSeconds;
+      newPositionValue = 100;
     }
+
+    // update the new target position after we move to the final position.
+    this.context.targetPosition = +newPositionValue;
+
 
     // Action
     this.platform.log.debug('action: ' + action);
     this.platform.log.debug('deviceId: ' + device.id);
     this.rfy.doCommand(device.id, action);
 
-    // Wait targetState and stop
-    if (
-      this.context.targetPosition !== 0 &&
-      this.context.targetPosition !== 100
-    ) {
-      const moveTimeMs =
-        (Math.round(fullActionDurationSeconds * 1000) *
-          Math.abs(
-            this.context.currentPosition - this.context.targetPosition,
-          )) /
-        100;
+    let moveTimeMs = 50;
+    setTimeout(() => {
+        // I am not sure why I need to send stop after program but it won't work if I don't.
+        if (newPositionValue == 50) {
+            this.platform.log.debug('sending stop after: ' + moveTimeMs);
+            this.rfy.doCommand(device.id, 'stop');
+            this.setPositionState(
+              this.platform.Characteristic.PositionState.STOPPED,
+            );
+        }
+    }, moveTimeMs);
 
-      this.platform.log.debug('moveTimeMs: ' + moveTimeMs);
-      setTimeout(() => {
-        this.rfy.doCommand(device.id, 'stop');
-        this.setPositionState(
-          this.platform.Characteristic.PositionState.STOPPED,
-        );
-      }, moveTimeMs);
-    }
 
-    this.setCurrentPosition(+value);
+    this.platform.log.debug('set new position value: ' + newPositionValue);
+    // Set the current position value for homekit to show the change of the shutter status.
+    this.setCurrentPosition(+newPositionValue);
+
     callback();
   }
 
