@@ -1,15 +1,15 @@
 {
-  "displayName": "Homebridge RFXCOM Accessories",
-  "name": "homebridge-rfxcom-accessories",
-  "description": "Homebridge plugin for RFXCOM Accessories",
+  "displayName": "Homebridge RFXCOM Somfy Roller Shutter",
+  "name": "homebridge-rfxcom-somfy",
+  "description": "Homebridge plugin for RFXCOM Somfy Roller Shutter",
   "license": "MIT",
-  "author": "Loick MAHIEUX <loick111@gmail.com>",
+  "author": "Omka <omka.smarthome@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git://github.com/loick111/homebridge-rfxcom-accessories.git"
+    "url": "git://github.com/om-ka/homebridge-rfxcom-somfy.git"
   },
   "bugs": {
-    "url": "https://github.com/loick111/homebridge-rfxcom-accessories/issues"
+    "url": "https://github.com/om-ka/homebridge-rfxcom-somfy/issues"
   },
   "engines": {
     "node": ">=10.17.0",
@@ -32,7 +32,9 @@
     "window covering",
     "blinds",
     "homekit",
-    "awning"
+    "awning",
+    "roller",
+    "shutter"
   ],
   "devDependencies": {
     "@types/node": "^14.14.31",
