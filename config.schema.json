@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "RFXCOMAccessories",
+  "pluginAlias": "RFXCOMSomfy",
   "pluginType": "platform",
   "singular": true,
   "schema": {
@@ -9,7 +9,7 @@
         "title": "Platform name",
         "type": "string",
         "required": true,
-        "default": "RFXCOM"
+        "default": "RFXCOMSomfy"
       },
       "tty": {
         "title": "TTY",
