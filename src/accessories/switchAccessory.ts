@@ -9,7 +9,7 @@ import {
 import rfxcom from 'rfxcom';
 import { Device } from '../device';
 
-import { RFXCOMAccessories } from '../platform';
+import { RFXCOMSomfy } from '../platform';
 export class SwitchDevice extends Device {
   constructor(
     public readonly api: API,
@@ -36,7 +36,7 @@ export class SwitchAccessory {
   private state: CharacteristicValue = false;
 
   constructor(
-    private readonly platform: RFXCOMAccessories,
+    private readonly platform: RFXCOMSomfy,
     private readonly accessory: PlatformAccessory,
   ) {
     this.accessory

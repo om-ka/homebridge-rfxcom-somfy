@@ -1,7 +1,7 @@
 import { API, PlatformAccessory } from 'homebridge';
 import { Device } from '../device';
 
-import { RFXCOMAccessories } from '../platform';
+import { RFXCOMSomfy } from '../platform';
 
 export class WeatherSensorDevice extends Device {
   constructor(
@@ -29,7 +29,7 @@ export class WeatherSensorEvent {
  */
 export class WeatherSensorAccessory {
   constructor(
-    private readonly platform: RFXCOMAccessories,
+    private readonly platform: RFXCOMSomfy,
     private readonly accessory: PlatformAccessory,
     private readonly event: WeatherSensorEvent,
   ) {

@@ -9,7 +9,7 @@ import {
 import rfxcom from 'rfxcom';
 import { Device } from '../device';
 
-import { RFXCOMAccessories } from '../platform';
+import { RFXCOMSomfy } from '../platform';
 export class RFYDevice extends Device {
   constructor(
     public readonly api: API,
@@ -44,7 +44,7 @@ export class RFYAccessory {
   };
 
   constructor(
-    private readonly platform: RFXCOMAccessories,
+    private readonly platform: RFXCOMSomfy,
     private readonly accessory: PlatformAccessory,
   ) {
     // set accessory information
@@ -165,8 +165,8 @@ export class RFYAccessory {
     let newPositionValue = 0;
 
     // I set this range to replicate the Somfy remote contorl. A press on the up button will send a up command.
-    // To stop this command you can press the "my" button to stop at a desired highted of the shutter. For this I 
-    // created a zone from 40 to 60 so we could press this "button". If it would be only 50 then after I stoped the 
+    // To stop this command you can press the "my" button to stop at a desired highted of the shutter. For this I
+    // created a zone from 40 to 60 so we could press this "button". If it would be only 50 then after I stoped the
     // shutter it won't send the command again. This way we could press any number in the range of 40-60 and it will
     // act as another press on the "my" button.
 
@@ -198,16 +198,16 @@ export class RFYAccessory {
     this.platform.log.debug('deviceId: ' + device.id);
     this.rfy.doCommand(device.id, action);
 
-    let moveTimeMs = 50;
+    const moveTimeMs = 50;
     setTimeout(() => {
-        // I am not sure why I need to send stop after program but it won't work if I don't.
-        if (newPositionValue == 50) {
-            this.platform.log.debug('sending stop after: ' + moveTimeMs);
-            this.rfy.doCommand(device.id, 'stop');
-            this.setPositionState(
-              this.platform.Characteristic.PositionState.STOPPED,
-            );
-        }
+      // I am not sure why I need to send stop after program but it won't work if I don't.
+      if (newPositionValue == 50) {
+        this.platform.log.debug('sending stop after: ' + moveTimeMs);
+        this.rfy.doCommand(device.id, 'stop');
+        this.setPositionState(
+          this.platform.Characteristic.PositionState.STOPPED,
+        );
+      }
     }, moveTimeMs);
 
 
